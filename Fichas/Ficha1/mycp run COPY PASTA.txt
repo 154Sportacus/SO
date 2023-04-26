@@ -1,0 +1,1 @@
+./mycp "C:\\Users\\Neranya\\Documents\\Engenharia Informática\\SO\\Fichas\\Ficha1\\my_cp_testfiles\\mycp_input.txt" "C:\\Users\\Neranya\\Documents\\Engenharia Informática\\SO\\Fichas\\Ficha1\\my_cp_testfiles\\mycp_output.txt"
