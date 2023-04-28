@@ -58,7 +58,7 @@ int main() {
     }
 
     // Use the list here...
-    while((bytes_read = myreadln(0,list[i],sizeof(char *)))>0 && strncmp(list[i],"stop",4) && i<MAX_STRINGS){
+    while((bytes_read = myreadln(0,list[i],sizeof(char *)))>0 && strcmp(list[i],"stop\n") && i<MAX_STRINGS){
         list[i][bytes_read-1]='\0';
         printf("read:%s\n", list[i]);
         i++;
@@ -78,7 +78,7 @@ int main() {
 
     for(int k=0; k<j; k++){
         wait(&status);
-        printf("Filho executou o seu comando com sucesso!\n");
+        printf("Bom trabalho meo puto!\n");
     }
 
 
