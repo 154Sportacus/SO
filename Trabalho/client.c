@@ -20,11 +20,11 @@ void generate_named_pipes(int pid){
     if(mkfifo(pid_SC,0600)<0)
         perror("Error: Could not create the server -> client named pipe");
 
-    fd_write = open(pid_CS, O_WRONLY | O_NONBLOCK);
+    fd_write = open(pid_CS, O_WRONLY | O_NONBLOCK); 
     fd_read = open(pid_SC, O_RDONLY| O_NONBLOCK); 
 
 }
-
+ 
 void close_named_pipes(){
     close(fd_read);
     close(fd_write);
