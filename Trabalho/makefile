@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -std=c99
 
-CLIENT_SRC = client.c myreadln.c
-SERVER_SRC = server.c myreadln.c
+CLIENT_SRC = client.c utils.c
+SERVER_SRC = server.c utils.c
 
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
