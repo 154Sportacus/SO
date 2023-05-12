@@ -19,4 +19,5 @@ monitor: $(SERVER_OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(CLIENT_OBJ) $(SERVER_OBJ) tracer monitor
+	rm -f $(CLIENT_OBJ) $(SERVER_OBJ) tracer monitor ClientServerConnection SC* CS*
+
