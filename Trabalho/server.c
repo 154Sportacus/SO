@@ -162,7 +162,7 @@ int main()
     printf("server pipe opened successfully\n");
     char buffer[256];
     int bytes_read;
-
+ 
     //Main loop
     while (1)
     {

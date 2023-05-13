@@ -2,33 +2,39 @@
 
 
 int fd_write, fd_read, server_fd;
+ 
 
-
-void generate_named_pipes(char* pid_SC, char* pid_CS){
+void generate_write_pipe(char* pid_CS){
     
-    //Create the named pipes
-    printf("Creatingdasf  \n");
+    //Create the named pipe
+    
     if(mkfifo(pid_CS,0666)<0)
         perror("Error: Could not create the client -> server named pipe");
-    if(mkfifo(pid_SC,0666)<0)
-        perror("Error: Could not create the server -> client named pipe");
-
-    //Guarded opens
-    printf("Creatingdasf sadasdas \n");
+   
     
     if((fd_write = open(pid_CS, O_WRONLY))==-1){
         perror("Error: Could not open write pipe for client -> server");
         return;
     }
-    if((fd_read = open(pid_SC, O_RDONLY))==-1){
-        perror("Error: Could not open read pipe for client -> server");
-        sleep(1);
-    } 
-    printf("Creatingdasf sadasdas3 \n");
+    printf("%s generated \n",pid_CS);
+ 
+}
+
+void generate_read_pipe(char* pid_SC){
+    
+    //Create the named pipe
+    if(mkfifo(pid_SC,0666)<0)
+      perror("Error: Could not create the server -> client named pipe");
+
 
     
+    if((fd_read = open(pid_SC, O_RDONLY))==-1){
+        perror("Error: Could not open read pipe for client -> server");
+    }
+    printf("%s generated \n",pid_SC);
 
 }
+ 
  
 /*
 void open_named_pipes(char* pid_SC, char* pid_CS){
@@ -43,11 +49,6 @@ void open_named_pipes(char* pid_SC, char* pid_CS){
     }
 }
 */
-
-void close_named_pipes(){
-    close(fd_read);
-    close(fd_write);
-}
 
 
 
@@ -92,7 +93,7 @@ void executeUnique(char** array){
     char final_time_stamp[2*BUFF_SIZE];
     char program_name[BUFF_SIZE];
     char error_message[BUFF_SIZE];
-
+    pid = getpid();
     //Child process:
     if((pid=fork())==0){ 
         close(server_fd);
@@ -100,9 +101,10 @@ void executeUnique(char** array){
             perror("Falha ao executar o comando.\n");
             exit(EXIT_FAILURE);
         }
-    }
+    
+    } 
     //Parent process:
-    else{ 
+    else{
         char pid_SC[32];
         char pid_CS[32];
         
@@ -115,19 +117,16 @@ void executeUnique(char** array){
         
         //Send the PID of the child process to the server
         sprintf(pid_buff, "%d\n", pid);
-        
-        printf("_95 generate_named_pipes(pid);\n");                    /*             /!\     /!\     /!\ */
-        generate_named_pipes(pid_SC, pid_CS);
-        
+
         //Writes to serverhe connection request with child process's pid.
-        printf("Server connection request by pid %d: \" \"\n", pid);
+        printf("Server connection request by pid: %d buff info:%s\n",pid,pid_buff);
         write(server_fd, pid_buff, strlen(pid_buff));
+        printf("Server connection sent by pid:%d buff info:%s\n",pid,pid_buff);
         WR_NEWLINE(server_fd);
         close(server_fd);
-        sleep(10);
-
-        //open_named_pipes(pid_SC, pid_CS);
-
+        
+        generate_write_pipe(pid_CS);
+       
         //Informs the user which PID is running.
         write(0,buffer, strlen(buffer));
         
@@ -164,15 +163,17 @@ void executeUnique(char** array){
         strcat(final_time_stamp, "\n");
     
         //Informs the server of the final timestamp.
+        printf("Final timestamp: %s\n", final_time_stamp);
         write(fd_write,final_time_stamp,strlen(final_time_stamp));
-        WR_NEWLINE(fd_write);
-
-        close_named_pipes();
+        
+        //WR_NEWLINE(fd_write);
+        close(fd_write);
+        close(server_fd);
     }
 }
 
 
-
+//____________________________________________________________________
 
 
 void status_request(){
@@ -181,32 +182,46 @@ void status_request(){
     char buffer[BUFF_SIZE];
     char pid_SC[32];
     char pid_CS[32];
+    char pid_buff[32];
+
     int pid = getpid();
         
     //Name of the named pipes about to be used
-    sprintf(pid_CS, "CS_%d",pid); //client to server [WRITE]
     sprintf(pid_SC, "SC_%d",pid); //server to client [READ]
+    sprintf(pid_CS, "CS_%d", pid);
 
-    generate_named_pipes(pid_SC,pid_CS);
-    //open_named_pipes(pid_SC,pid_CS);
+    sprintf(pid_buff, "%d\n", pid);
+
+
+    printf("Server connection request by pid: %d buff info:%s\n",pid,pid_buff);
+    write(server_fd, pid_buff, strlen(pid_buff));
+    printf("Server connection sent by pid: %d buff info:%s\n",pid,pid_buff);
+
+    close(server_fd);
+
+    generate_write_pipe(pid_CS);
+ 
     write(fd_write, status, strlen(status));
     WR_NEWLINE(fd_write);
+    close(fd_write);
     
-    while((bytes_read = myreadln(fd_read, buffer, BUFF_SIZE))>=0){
-        if(bytes_read==0)
-            break;
+    generate_read_pipe(pid_SC);
+
+    while((bytes_read = myreadln(fd_read, buffer, BUFF_SIZE))>0){
         write(0, buffer, bytes_read);
+        write(0,"\n",1);
     }
 
-    close_named_pipes();
+    close(fd_read);
+    
 }
+//____________________________________________________________________
 
 
 
 
 
-
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
     int num_strings;
 
     server_fd = open(SERVER_PIPE, O_WRONLY,0);
@@ -222,12 +237,6 @@ int main(int argc, char** argv) {
 
         executeUnique(string_array);
         printf("acabou de correr executeUnique\n");
-        // Print the array of strings
-        printf("Number of strings: %d\n", num_strings);
-        for (int i = 0; i < num_strings; i++) {
-            printf("String %d: %s\n", i, string_array[i]);
-        }
-
         // Free the memory allocated for the array of strings
         free(string_array);
     }
