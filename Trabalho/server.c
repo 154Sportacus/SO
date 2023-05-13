@@ -55,17 +55,16 @@ void answer_status(char* pid){
                     time_ms = get_long_timestamp();
                     time_stamp_inicial = strtol(buffer+1, &endptr, 10);
                     sprintf(execution_time, "Execution time: %ld\n", time_ms - time_stamp_inicial);
-                    write(fd_write,execution_time, strlen(execution_time));
+                    strcat(program_name,execution_time);
+                    write(fd_write,program_name, strlen(program_name));
                     close(file);
                 }else if(buffer[0] == 'N'){
-                    sprintf(program_name,"Program name: %s\n",buffer+1);
-                    write(fd_write,program_name, strlen(program_name));
+                    sprintf(program_name,"Program name: %s | ",buffer+1);
                 }else 
                     break;
             }
         }
     }
-    printf("about to send new line ro clien \n\n");
     WR_NEWLINE(fd_write);
     close(fd_write);
 }
@@ -87,12 +86,9 @@ void message_protocol(char* pid){
     char file_path_term[64];
     sprintf(file_path_tmp,"%s%s",TEMPORARY,pid);
     sprintf(file_path_term,"%s%s",TERMINATED,pid);
-    int i=0;
     int on=1;
 
     while((bytesRead = myreadln(fd_read,buffer,1024)) >= 0 && on){
-        printf("Entrei pela %dª vez no while\n",i++);
-        printf("Recebi o buffer: %s\n\n",buffer);
         if(bytesRead==0)
             continue;
         else if(strcmp(buffer,"status")==0){
@@ -135,14 +131,10 @@ void message_protocol(char* pid){
 
 
 void client_handler(char* pid){
-    printf("1.buffer -> pid= %s\n",pid); 
     char pid_CS[BUFF_SIZE];
-
-    sprintf(pid_CS, "CS_%s", pid); // 
+    sprintf(pid_CS, "CS_%s", pid); 
     fd_read = open(pid_CS, O_RDONLY);
     message_protocol(pid);
-    printf("2.buffer -> pid= %s\n",pid); 
-
 }
 
 
@@ -157,7 +149,6 @@ int main()
         printf("Error creating '%s'\n",SERVER_PIPE);
         return 1;
     }
-    printf("Server pipe created\n");
 
     // open the pipe for reading
     int pipe_fd;
@@ -165,7 +156,7 @@ int main()
         perror("Error: Could not open read pipe for server -> client");
         return -1;
     }
-    printf("server pipe opened successfully\n");
+
     char buffer[256];
     int bytes_read;
     pid_t pid;
@@ -182,9 +173,7 @@ int main()
             }
             else if(pid == 0)// child process
             {
-                printf("Client %s connected\n", buffer);
                 client_handler(buffer);
-                printf("Client_handler processed the following buffer:/!\\%s\n", buffer);
             }
             else{
                 break;

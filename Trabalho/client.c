@@ -18,7 +18,7 @@ void generate_write_pipe(char* pid_CS){
         perror("Error: Could not open write pipe for client -> server");
         return;
     }
-    printf("%s generated \n",pid_CS);
+    
  
 }
 
@@ -35,7 +35,7 @@ void generate_read_pipe(char* pid_SC){
     if((fd_read = open(pid_SC, O_RDONLY))==-1){
         perror("Error: Could not open read pipe for client -> server");
     }
-    printf("%s generated \n",pid_SC);
+    
 
 }
 
@@ -83,7 +83,11 @@ void executeUnique(char** array){
     char final_time_stamp[2*BUFF_SIZE];
     char program_name[BUFF_SIZE];
     char error_message[BUFF_SIZE];
+    char answer_user_timestamp[BUFF_SIZE];
     pid = getpid();
+
+    long time_ms;
+
     //Child process:
     if((pid=fork())==0){ 
         close(server_fd);
@@ -101,17 +105,18 @@ void executeUnique(char** array){
         //Name of the named pipes about to be used
         sprintf(pid_CS, "CS_%d",pid); //client to server [WRITE]
         sprintf(pid_SC, "SC_%d",pid); //server to client [READ]
-        printf("Parent process: %d\n",getpid());
-        get_timestamp(time_stamp);
+
+
+
+        time_ms = return_timestamp(time_stamp);
         sprintf(buffer, "Running PID: %d\n", pid);
         
         //Send the PID of the child process to the server
         sprintf(pid_buff, "%d\n", pid);
 
         //Writes to serverhe connection request with child process's pid.
-        printf("Server connection request by pid: %d buff info:%s\n",pid,pid_buff);
         write(server_fd, pid_buff, strlen(pid_buff));
-        printf("Server connection sent by pid:%d buff info:%s\n",pid,pid_buff);
+
         WR_NEWLINE(server_fd);
         close(server_fd);
         
@@ -126,7 +131,8 @@ void executeUnique(char** array){
         strcat(initial_time_stamp, "\n");
 
         //Informs the user of the initial timestamp.
-        write(0,time_stamp,strlen(time_stamp));
+        sprintf(answer_user_timestamp, "Initial timestamp: %ldms\n", time_ms);
+        write(0,answer_user_timestamp,strlen(answer_user_timestamp));
        
         //Program name protocol is prepended.
         sprintf(program_name, "N");
@@ -147,14 +153,15 @@ void executeUnique(char** array){
             perror(error_message);
         }
         //Gets the final time stamp.
-        get_timestamp(time_stamp);
+        time_ms = return_timestamp(time_stamp) - time_ms;
         sprintf(final_time_stamp, "F");
         strcat(final_time_stamp, time_stamp);
         strcat(final_time_stamp, "\n");
     
         //Informs the server of the final timestamp.
-        printf("Final timestamp: %s\n", final_time_stamp);
         write(fd_write,final_time_stamp,strlen(final_time_stamp));
+        sprintf(final_time_stamp, "Tempo de execução: %ldms\n",time_ms);
+        write(0,final_time_stamp,strlen(final_time_stamp));
         
         //WR_NEWLINE(fd_write);
         close(fd_write);
@@ -226,12 +233,15 @@ int main(int argc, char* argv[]) {
         char** string_array = split_string(argv[3], &num_strings);
 
         executeUnique(string_array);
-        printf("acabou de correr executeUnique\n");
+
         // Free the memory allocated for the array of strings
         free(string_array);
     }
     else if(argc == 2 && !strcmp(argv[1], "status")){
         status_request();
+    }
+    else if (argc == 3 && !strcmp(argv[1], "status-time")){
+        status_request_time();
     }
 
     return 0;

@@ -26,21 +26,6 @@ int myreadln(int fd, char *line, int size) {
     return i;
 }
 
-
-void get_timestamp(char* time_stamp){
-    long time_ms;
-    struct timeval time_value;
-
-    if (gettimeofday(&time_value, NULL) == -1) {
-            perror("gettimeofday() error");
-            exit(EXIT_FAILURE);
-        }
-
-    //Write the time stamp.
-    time_ms = (long)(time_value.tv_sec * 1000LL + time_value.tv_usec / 1000LL);
-    sprintf(time_stamp, "%ld\n", time_ms);
-}
-
 long get_long_timestamp(){
     struct timeval time_value;
 
@@ -51,4 +36,21 @@ long get_long_timestamp(){
     
     return (long)(time_value.tv_sec * 1000LL + time_value.tv_usec / 1000LL);
 }
+
+long return_timestamp(char *time_stamp){
+    long time_ms;
+    time_ms = get_long_timestamp();
+    sprintf(time_stamp, "%ld\n", time_ms);
+    return time_ms;
+}
+
+
+void get_timestamp(char* time_stamp){
+    long time_ms;
+    time_ms = get_long_timestamp();
+    sprintf(time_stamp, "%ld\n", time_ms);
+}
+
+
+
 

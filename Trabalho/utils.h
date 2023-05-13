@@ -20,7 +20,8 @@
 
 //function declarations
 int myreadln(int fd, char *line, int size);
-void get_timestamp(char* time_stamp);
 long get_long_timestamp();
+long return_timestamp(char* time_stamp);
+void get_timestamp(char* time_stamp);
 
 #endif 
