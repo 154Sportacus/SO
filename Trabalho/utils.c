@@ -9,13 +9,14 @@ int myreadln(int fd, char *line, int size) {
 
     while (i<size-1) {  
         if ((n = read(fd, &character, 1)) == 1) {
-            if (character == '\n' || character == '\0' || character == EOF) /
+            if (character == '\n' || character == '\0' || character == EOF)
                 break;
             line[i++] = character;
-        } else if (n == 0) { .
+        } else if (n == 0) {
             continue;
         } else {
-            return -1;  
+            return -1;
+        }
     }
 
     if(i>0)
