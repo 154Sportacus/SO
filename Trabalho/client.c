@@ -4,6 +4,8 @@
 int fd_write, fd_read, server_fd;
  
 
+//____________________________________________________________________
+
 void generate_write_pipe(char* pid_CS){
     
     //Create the named pipe
@@ -20,6 +22,8 @@ void generate_write_pipe(char* pid_CS){
  
 }
 
+//____________________________________________________________________
+
 void generate_read_pipe(char* pid_SC){
     
     //Create the named pipe
@@ -34,23 +38,9 @@ void generate_read_pipe(char* pid_SC){
     printf("%s generated \n",pid_SC);
 
 }
- 
- 
-/*
-void open_named_pipes(char* pid_SC, char* pid_CS){
-    if((fd_read = open(pid_SC, O_RDONLY))==-1){
-            perror("Error: Could not open read pipe for client -> server");
-            return;
-    } 
-
-    if((fd_write = open(pid_CS, O_WRONLY))==-1){
-            perror("Error: Could not open write pipe for client -> server");
-            return;
-    }
-}
-*/
 
 
+//____________________________________________________________________
 
 
 char** split_string(char* input_string, int* num_strings) {
@@ -78,7 +68,7 @@ char** split_string(char* input_string, int* num_strings) {
 
 
 
-
+//____________________________________________________________________
 
 
 void executeUnique(char** array){
@@ -215,10 +205,10 @@ void status_request(){
     close(fd_read);
     
 }
+
+
+
 //____________________________________________________________________
-
-
-
 
 
 int main(int argc, char* argv[]) {

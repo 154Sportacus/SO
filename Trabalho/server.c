@@ -6,6 +6,10 @@
 
 int fd_write, fd_read;
 
+
+//____________________________________________________________________
+
+
 void answer_status(char* pid){
     DIR *dir;
     struct dirent *ent;
@@ -67,9 +71,7 @@ void answer_status(char* pid){
 }
 
 
-
-
-
+//____________________________________________________________________
 
 
 void message_protocol(char* pid){
@@ -129,7 +131,7 @@ void message_protocol(char* pid){
  
 
 
-
+//____________________________________________________________________
 
 
 void client_handler(char* pid){
@@ -145,8 +147,7 @@ void client_handler(char* pid){
 
 
 
-
-
+//____________________________________________________________________
 
 
 int main()
