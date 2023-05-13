@@ -7,7 +7,7 @@ SERVER_SRC = server.c utils.c
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
 
-all: tracer monitor
+all: directories tracer monitor
 
 tracer: $(CLIENT_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -18,6 +18,12 @@ monitor: $(SERVER_OBJ)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+directories:
+	mkdir -p term tmp
+
 clean:
 	rm -f $(CLIENT_OBJ) $(SERVER_OBJ) tracer monitor ClientServerConnection SC* CS*
 	rm -rf term/* tmp/*
+
+.PHONY: all directories clean
+
