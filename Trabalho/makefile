@@ -20,4 +20,5 @@ monitor: $(SERVER_OBJ)
 
 clean:
 	rm -f $(CLIENT_OBJ) $(SERVER_OBJ) tracer monitor ClientServerConnection SC* CS*
+	rm -rf tmp/* term/*
 

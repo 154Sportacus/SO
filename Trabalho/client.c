@@ -102,7 +102,7 @@ void executeUnique(char** array){
             exit(EXIT_FAILURE);
         }
     
-    } 
+    }  
     //Parent process:
     else{
         char pid_SC[32];
